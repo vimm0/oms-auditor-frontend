@@ -72,6 +72,7 @@ export function EntityTable<T extends { ID: number }>({
   const [sort, setSort] = useState<string | null>(null);
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
   const [search, setSearch] = useState('');
+  const [appliedSearch, setAppliedSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ id: number; name?: string } | null>(null);
@@ -86,6 +87,7 @@ export function EntityTable<T extends { ID: number }>({
         order,
       };
       if (sort) params.sort = sort;
+      if (appliedSearch) params.q = appliedSearch;
       const res = await apiGet<PaginatedResponse<T>>(basePath, params);
       setData(res);
     } catch (e) {
@@ -97,7 +99,22 @@ export function EntityTable<T extends { ID: number }>({
 
   useEffect(() => {
     fetchList();
-  }, [basePath, page, rowsPerPage, sort, order]);
+  }, [basePath, page, rowsPerPage, sort, order, appliedSearch]);
+
+  // Debounce search: update appliedSearch 400ms after user stops typing; clear immediately when empty
+  useEffect(() => {
+    const term = search.trim();
+    if (term === '') {
+      setAppliedSearch('');
+      setPage(0);
+      return;
+    }
+    const t = setTimeout(() => {
+      setAppliedSearch(term);
+      setPage(0);
+    }, 400);
+    return () => clearTimeout(t);
+  }, [search]);
 
   const handleDelete = async () => {
     if (!deleteConfirm) return;
@@ -129,6 +146,17 @@ export function EntityTable<T extends { ID: number }>({
 
   const items = data?.items ?? [];
   const total = data?.total ?? 0;
+
+  // Client-side filter by search (covers current page when backend doesn't support `q`)
+  const filteredItems = appliedSearch
+    ? items.filter((row) =>
+        columns.some((col) => {
+          const v = (row as Record<string, unknown>)[col.key as string];
+          if (v == null) return false;
+          return String(v).toLowerCase().includes(appliedSearch.toLowerCase());
+        })
+      )
+    : items;
 
   return (
     <Box>
@@ -166,14 +194,14 @@ export function EntityTable<T extends { ID: number }>({
               </TableRow>
             </TableHead>
             <TableBody>
-              {items.length === 0 ? (
+              {filteredItems.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={columns.length + 1} align="center" sx={{ py: 3, color: 'text.secondary' }}>
-                    No records
+                    {items.length === 0 ? 'No records' : 'No matches for search'}
                   </TableCell>
                 </TableRow>
               ) : (
-                items.map((row) => (
+                filteredItems.map((row) => (
                   <TableRow key={getRowKey(row)} hover>
                     {columns.map((col) => (
                       <TableCell key={String(col.key)}>
