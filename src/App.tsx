@@ -13,6 +13,8 @@ import RankingPage from './pages/admin/RankingPage';
 import VatStmtPage from './pages/admin/VatStmtPage';
 import PartiPage from './pages/admin/PartiPage';
 import DailyWorksPage from './pages/admin/DailyWorksPage';
+import GenericEntityPage from './pages/admin/GenericEntityPage';
+import { ADMIN_ENTITY_ROUTES } from './pages/admin/adminEntities';
 import './App.css';
 
 function App() {
@@ -34,6 +36,13 @@ function App() {
           <Route path="vat-stmt" element={<VatStmtPage />} />
           <Route path="parti" element={<PartiPage />} />
           <Route path="daily-works" element={<DailyWorksPage />} />
+          {Object.entries(ADMIN_ENTITY_ROUTES).map(([route, { title, basePath }]) => (
+            <Route
+              key={route}
+              path={route}
+              element={<GenericEntityPage title={title} basePath={basePath} />}
+            />
+          ))}
         </Route>
         <Route path="/" element={<Navigate to="/login" replace />} />
       </Routes>

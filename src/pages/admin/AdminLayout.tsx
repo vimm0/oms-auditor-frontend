@@ -8,9 +8,11 @@ import {
   Receipt,
   Building2,
   ClipboardList,
+  Database,
 } from 'lucide-react';
+import { ADMIN_ENTITY_ROUTES } from './adminEntities';
 
-const entities = [
+const customEntities = [
   { path: 'staff-details', label: 'Staff', icon: Users },
   { path: 'login-tracker', label: 'Login Tracker', icon: LogIn },
   { path: 'attendance', label: 'Attendance', icon: Calendar },
@@ -20,6 +22,14 @@ const entities = [
   { path: 'parti', label: 'Parti', icon: Building2 },
   { path: 'daily-works', label: 'Daily Works', icon: ClipboardList },
 ];
+
+const genericEntities = Object.entries(ADMIN_ENTITY_ROUTES).map(([path, { title }]) => ({
+  path,
+  label: title,
+  icon: Database,
+}));
+
+const entities = [...customEntities, ...genericEntities];
 
 export default function AdminLayout() {
   return (
