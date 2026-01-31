@@ -72,21 +72,21 @@ export default function Attendance() {
 
       <Paper variant="outlined" sx={{ p: 2 }}>
         <Typography variant="subtitle1" sx={{ mb: 2 }}>History</Typography>
-        <TableContainer>
-          <Table size="small">
+        <TableContainer sx={{ width: '100%', overflow: 'auto' }}>
+          <Table size="small" sx={{ minWidth: '100%' }}>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ fontWeight: 600 }}>Date (Nep)</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Time</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 600, minWidth: 240, whiteSpace: 'nowrap' }}>Date (Nep)</TableCell>
+                <TableCell sx={{ fontWeight: 600, minWidth: 120, whiteSpace: 'nowrap' }}>Time</TableCell>
+                <TableCell sx={{ fontWeight: 600, minWidth: 120, whiteSpace: 'nowrap' }}>Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {history.map((record) => (
                 <TableRow key={record.ID} hover>
-                  <TableCell>{record.Nepdate ?? '—'}</TableCell>
-                  <TableCell>{record.atttime ? new Date(record.atttime).toLocaleTimeString() : '—'}</TableCell>
-                  <TableCell>
+                  <TableCell sx={{ minWidth: 240, whiteSpace: 'nowrap' }}>{record.Nepdate ?? '—'}</TableCell>
+                  <TableCell sx={{ minWidth: 120, whiteSpace: 'nowrap' }}>{record.atttime ? new Date(record.atttime).toLocaleTimeString() : '—'}</TableCell>
+                  <TableCell sx={{ minWidth: 120, whiteSpace: 'nowrap' }}>
                     <Typography component="span" sx={{ px: 1, py: 0.5, borderRadius: 1, bgcolor: 'success.main', color: 'success.contrastText', fontSize: '0.8rem' }}>
                       Present
                     </Typography>

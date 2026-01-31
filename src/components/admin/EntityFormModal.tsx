@@ -4,10 +4,10 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Button,
   IconButton,
+  Tooltip,
 } from '@mui/material';
-import { X } from 'lucide-react';
+import { X, RotateCcw, Check } from 'lucide-react';
 
 interface EntityFormModalProps {
   open: boolean;
@@ -38,11 +38,17 @@ export function EntityFormModal({
         {children}
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button onClick={onClose}>Cancel</Button>
+        <Tooltip title="Cancel">
+          <IconButton onClick={onClose} aria-label="Cancel">
+            <RotateCcw size={20} />
+          </IconButton>
+        </Tooltip>
         {onSubmit && (
-          <Button variant="contained" onClick={onSubmit}>
-            {submitLabel}
-          </Button>
+          <Tooltip title={submitLabel}>
+            <IconButton color="primary" onClick={onSubmit} aria-label={submitLabel} sx={{ bgcolor: 'primary.main', color: 'primary.contrastText', '&:hover': { bgcolor: 'primary.dark' } }}>
+              <Check size={20} />
+            </IconButton>
+          </Tooltip>
         )}
       </DialogActions>
     </Dialog>

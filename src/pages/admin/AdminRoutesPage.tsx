@@ -31,20 +31,32 @@ export default function AdminRoutesPage() {
     setPage(0);
   };
 
+  const COL_MIN = 180;
+  const stickyFirstCellSx = {
+    position: 'sticky' as const,
+    left: 0,
+    zIndex: 1,
+    backgroundColor: 'background.paper',
+    borderRight: '1px solid',
+    borderColor: 'divider',
+    minWidth: 140,
+  };
+  const stickyFirstHeaderSx = { ...stickyFirstCellSx, zIndex: 3 };
+
   return (
     <Box>
       <Typography variant="h5" sx={{ mb: 2 }}>
         Admin routes
       </Typography>
-      <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
-        <TableContainer sx={{ maxHeight: 'calc(100vh - 220px)' }}>
-          <Table stickyHeader size="small">
+      <Paper variant="outlined" sx={{ overflow: 'hidden', width: '100%' }}>
+        <TableContainer sx={{ maxHeight: 'calc(100vh - 220px)', overflow: 'auto', width: '100%' }}>
+          <Table stickyHeader size="small" sx={{ minWidth: '100%' }}>
             <TableHead>
               <TableRow>
-                <TableCell sx={{ fontWeight: 600 }}>Path</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>API base path</TableCell>
-                <TableCell sx={{ fontWeight: 600 }} align="center">
+                <TableCell sx={{ fontWeight: 600, ...stickyFirstHeaderSx, whiteSpace: 'nowrap' }}>Path</TableCell>
+                <TableCell sx={{ fontWeight: 600, minWidth: COL_MIN, whiteSpace: 'nowrap' }}>Title</TableCell>
+                <TableCell sx={{ fontWeight: 600, minWidth: COL_MIN, fontFamily: 'monospace', fontSize: '0.875rem', whiteSpace: 'nowrap' }}>API base path</TableCell>
+                <TableCell sx={{ fontWeight: 600, minWidth: 100, whiteSpace: 'nowrap' }} align="center">
                   Type
                 </TableCell>
               </TableRow>
@@ -52,16 +64,16 @@ export default function AdminRoutesPage() {
             <TableBody>
               {paginatedRows.map((row: AdminRouteRow) => (
                 <TableRow key={row.path} hover>
-                  <TableCell>
+                  <TableCell sx={{ ...stickyFirstCellSx, whiteSpace: 'nowrap' }}>
                     <Link component={RouterLink} to={`/admin/${row.path}`}>
                       {row.path}
                     </Link>
                   </TableCell>
-                  <TableCell>{row.title}</TableCell>
-                  <TableCell sx={{ fontFamily: 'monospace', fontSize: '0.875rem' }}>
+                  <TableCell sx={{ minWidth: COL_MIN, whiteSpace: 'nowrap' }}>{row.title}</TableCell>
+                  <TableCell sx={{ fontFamily: 'monospace', fontSize: '0.875rem', minWidth: COL_MIN, whiteSpace: 'nowrap' }}>
                     {row.basePath}
                   </TableCell>
-                  <TableCell align="center">
+                  <TableCell align="center" sx={{ whiteSpace: 'nowrap' }}>
                     <Chip
                       label={row.type}
                       size="small"

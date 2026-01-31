@@ -12,6 +12,8 @@ import {
   Typography,
   TextField,
   Button,
+  IconButton,
+  Tooltip,
   TablePagination,
   TableSortLabel,
   Dialog,
@@ -21,6 +23,7 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material';
+import { Pencil, Trash2 } from 'lucide-react';
 
 export interface ColumnDef<T> {
   key: keyof T | string;
@@ -28,24 +31,32 @@ export interface ColumnDef<T> {
   render?: (row: T) => React.ReactNode;
 }
 
-/** Format a cell value: dates as YYYY-MM-DD, else string. */
-function formatCellValue(val: unknown): React.ReactNode {
-  if (val == null) return '';
-  if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val)) {
-    return val.slice(0, 10);
-  }
-  if (typeof val === 'string' && val.includes('T')) {
-    try {
-      const d = new Date(val);
-      if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0, 10);
-    } catch {
-      // fall through
-    }
+/** Format a date as "EEEE, MMMM d, yyyy" (e.g. Saturday, January 31, 2025). */
+const longDateFormatter = new Intl.DateTimeFormat('en-US', {
+  weekday: 'long',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+function toDate(val: unknown): Date | null {
+  if (val == null) return null;
+  if (typeof val === 'string' && (/^\d{4}-\d{2}-\d{2}/.test(val) || val.includes('T'))) {
+    const d = new Date(val);
+    return Number.isNaN(d.getTime()) ? null : d;
   }
   if (typeof val === 'number' && val > 1e10) {
     const d = new Date(val);
-    if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+    return Number.isNaN(d.getTime()) ? null : d;
   }
+  return null;
+}
+
+/** Format a cell value: dates as EEEE, MMMM d, yyyy; else string. */
+function formatCellValue(val: unknown): React.ReactNode {
+  const d = toDate(val);
+  if (d) return longDateFormatter.format(d);
+  if (val == null) return '';
   return String(val);
 }
 
@@ -158,6 +169,26 @@ export function EntityTable<T extends { ID: number }>({
       )
     : items;
 
+  const COLUMN_MIN_WIDTH = 240;
+
+  const stickyFirstCellSx = {
+    position: 'sticky' as const,
+    left: 0,
+    zIndex: 1,
+    backgroundColor: 'background.paper',
+    borderRight: '1px solid',
+    borderColor: 'divider',
+    minWidth: 140,
+    whiteSpace: 'nowrap',
+  };
+  const stickyFirstHeaderSx = {
+    ...stickyFirstCellSx,
+    zIndex: 3,
+    backgroundColor: 'background.paper',
+  };
+  const dataColumnSx = { minWidth: COLUMN_MIN_WIDTH, whiteSpace: 'nowrap' };
+  const dataColumnHeaderSx = { fontWeight: 600, minWidth: COLUMN_MIN_WIDTH, whiteSpace: 'nowrap' };
+
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
@@ -174,13 +205,17 @@ export function EntityTable<T extends { ID: number }>({
         </Box>
       </Box>
 
-      <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
-        <TableContainer sx={{ maxHeight: 'calc(100vh - 280px)' }}>
-          <Table stickyHeader size="small">
+      <Paper variant="outlined" sx={{ overflow: 'hidden', width: '100%' }}>
+        <TableContainer sx={{ maxHeight: 'calc(100vh - 280px)', overflow: 'auto', width: '100%' }}>
+          <Table stickyHeader size="small" sx={{ minWidth: '100%' }}>
             <TableHead>
               <TableRow>
-                {columns.map((col) => (
-                  <TableCell key={String(col.key)} sortDirection={sort === col.key ? order : false} sx={{ fontWeight: 600 }}>
+                {columns.map((col, index) => (
+                  <TableCell
+                    key={String(col.key)}
+                    sortDirection={sort === col.key ? order : false}
+                    sx={index === 0 ? stickyFirstHeaderSx : dataColumnHeaderSx}
+                  >
                     <TableSortLabel
                       active={sort === col.key}
                       direction={sort === col.key ? order : 'asc'}
@@ -190,7 +225,7 @@ export function EntityTable<T extends { ID: number }>({
                     </TableSortLabel>
                   </TableCell>
                 ))}
-                <TableCell sx={{ fontWeight: 600, width: 140 }} align="right">Actions</TableCell>
+                <TableCell sx={{ fontWeight: 600, width: 140, minWidth: 140, whiteSpace: 'nowrap' }} align="right">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -203,14 +238,22 @@ export function EntityTable<T extends { ID: number }>({
               ) : (
                 filteredItems.map((row) => (
                   <TableRow key={getRowKey(row)} hover>
-                    {columns.map((col) => (
-                      <TableCell key={String(col.key)}>
+                    {columns.map((col, index) => (
+                      <TableCell key={String(col.key)} sx={index === 0 ? stickyFirstCellSx : dataColumnSx}>
                         {col.render ? col.render(row) : formatCellValue((row as Record<string, unknown>)[col.key as string])}
                       </TableCell>
                     ))}
                     <TableCell align="right">
-                      <Button size="small" onClick={() => onEdit(row)} sx={{ mr: 0.5 }}>Edit</Button>
-                      <Button size="small" color="error" onClick={() => setDeleteConfirm({ id: row.ID })}>Delete</Button>
+                      <Tooltip title="Edit">
+                        <IconButton size="small" onClick={() => onEdit(row)} aria-label="Edit">
+                          <Pencil size={18} />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete">
+                        <IconButton size="small" color="error" onClick={() => setDeleteConfirm({ id: row.ID })} aria-label="Delete">
+                          <Trash2 size={18} />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))
