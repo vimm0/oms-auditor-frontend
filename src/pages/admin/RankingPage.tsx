@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { EntityTable, ColumnDef } from '../../components/admin/EntityTable';
 import { EntityFormModal } from '../../components/admin/EntityFormModal';
+import { TextField, Box } from '@mui/material';
 import { apiPost, apiPatch } from '../../lib/api';
 
 interface Row {
@@ -41,13 +42,12 @@ export default function RankingPage() {
   return (
     <>
       <EntityTable<Row> key={refetch} title="Ranking" basePath={BASE} columns={columns} onAdd={openCreate} onEdit={openEdit} getRowKey={(r) => r.ID} />
-      <EntityFormModal open={modalOpen} title={editing ? 'Edit' : 'Create'} onClose={() => setModalOpen(false)}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <label>Pan No <input value={form.PanNo} onChange={(e) => setForm((f) => ({ ...f, PanNo: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <label>Fiscal Year <input value={form.Fiscalyear} onChange={(e) => setForm((f) => ({ ...f, Fiscalyear: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <label>Total Sale <input type="number" value={form.ttlsale} onChange={(e) => setForm((f) => ({ ...f, ttlsale: Number(e.target.value) || 0 }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}><button type="button" onClick={() => setModalOpen(false)}>Cancel</button><button type="button" onClick={submit}>Save</button></div>
-        </div>
+      <EntityFormModal open={modalOpen} title={editing ? 'Edit' : 'Create'} onClose={() => setModalOpen(false)} onSubmit={submit}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField label="Pan No" value={form.PanNo} onChange={(e) => setForm((f) => ({ ...f, PanNo: e.target.value }))} size="small" fullWidth />
+          <TextField label="Fiscal Year" value={form.Fiscalyear} onChange={(e) => setForm((f) => ({ ...f, Fiscalyear: e.target.value }))} size="small" fullWidth />
+          <TextField label="Total Sale" type="number" value={form.ttlsale} onChange={(e) => setForm((f) => ({ ...f, ttlsale: Number(e.target.value) || 0 }))} size="small" fullWidth inputProps={{ min: 0 }} />
+        </Box>
       </EntityFormModal>
     </>
   );

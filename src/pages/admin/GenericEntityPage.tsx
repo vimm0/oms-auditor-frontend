@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { EntityTable, ColumnDef } from '../../components/admin/EntityTable';
 import { EntityFormModal } from '../../components/admin/EntityFormModal';
+import { TextField, Box, Typography } from '@mui/material';
 import { apiGet, apiPost, apiPatch } from '../../lib/api';
 
 interface GenericRow {
@@ -71,27 +72,23 @@ export default function GenericEntityPage({ title, basePath, columns = defaultCo
         onEdit={openEdit}
         getRowKey={(r) => r.ID}
       />
-      <EntityFormModal open={modalOpen} title={editing ? `Edit ${title}` : `Create ${title}`} onClose={() => setModalOpen(false)}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          {Object.keys(form).length === 0 && !editing ? (
-            <p style={{ color: 'var(--muted)' }}>No extra fields. Click Save to create with defaults.</p>
-          ) : (
-            Object.keys(form).map((key) => (
-              <label key={key}>
-                {key}{' '}
-                <input
-                  value={form[key] ?? ''}
-                  onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
-                  style={{ width: '100%', padding: '0.35rem' }}
-                />
-              </label>
-            ))
-          )}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
-            <button type="button" onClick={() => setModalOpen(false)}>Cancel</button>
-            <button type="button" onClick={submit}>Save</button>
-          </div>
-        </div>
+      <EntityFormModal open={modalOpen} title={editing ? `Edit ${title}` : `Create ${title}`} onClose={() => setModalOpen(false)} onSubmit={submit}>
+        {Object.keys(form).length === 0 && !editing ? (
+          <Typography color="text.secondary">No extra fields. Click Save to create with defaults.</Typography>
+        ) : (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {Object.keys(form).map((key) => (
+              <TextField
+                key={key}
+                label={key.replace(/_/g, ' ')}
+                value={form[key] ?? ''}
+                onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+                size="small"
+                fullWidth
+              />
+            ))}
+          </Box>
+        )}
       </EntityFormModal>
     </>
   );

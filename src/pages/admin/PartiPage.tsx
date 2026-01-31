@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { EntityTable, ColumnDef } from '../../components/admin/EntityTable';
 import { EntityFormModal } from '../../components/admin/EntityFormModal';
+import { TextField, Box } from '@mui/material';
 import { apiGet, apiPost, apiPatch } from '../../lib/api';
 
 interface PartiRow {
@@ -36,16 +37,17 @@ export default function PartiPage() {
   const openEdit = useCallback((row: PartiRow) => {
     setEditing(row);
     apiGet<PartiRow>(`${BASE}/${row.ID}`).then((r) => {
+      const rec = r as unknown as Record<string, unknown>;
       setForm({
         PanNo: r.PanNo ?? '',
         Parti: r.Parti ?? '',
         Address: r.Address ?? '',
-        Email: (r as Record<string, unknown>).Email as string ?? '',
-        Contact_No: (r as Record<string, unknown>).Contact_No as string ?? '',
-        FP: (r as Record<string, unknown>).FP as string ?? '',
-        UserVat: (r as Record<string, unknown>).UserVat as string ?? '',
-        PassVat: (r as Record<string, unknown>).PassVat as string ?? '',
-        Mtax: (r as Record<string, unknown>).Mtax as string ?? '',
+        Email: (rec.Email as string) ?? '',
+        Contact_No: (rec.Contact_No as string) ?? '',
+        FP: (rec.FP as string) ?? '',
+        UserVat: (rec.UserVat as string) ?? '',
+        PassVat: (rec.PassVat as string) ?? '',
+        Mtax: (rec.Mtax as string) ?? '',
       });
     }).catch(() => {});
     setModalOpen(true);
@@ -74,18 +76,14 @@ export default function PartiPage() {
         onEdit={openEdit}
         getRowKey={(r) => r.ID}
       />
-      <EntityFormModal open={modalOpen} title={editing ? 'Edit Parti' : 'Create Parti'} onClose={() => setModalOpen(false)}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <label>Pan No <input value={form.PanNo} onChange={(e) => setForm((f) => ({ ...f, PanNo: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <label>Parti <input value={form.Parti} onChange={(e) => setForm((f) => ({ ...f, Parti: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <label>Address <input value={form.Address} onChange={(e) => setForm((f) => ({ ...f, Address: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <label>Email <input value={form.Email} onChange={(e) => setForm((f) => ({ ...f, Email: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <label>Contact No <input value={form.Contact_No} onChange={(e) => setForm((f) => ({ ...f, Contact_No: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
-            <button type="button" onClick={() => setModalOpen(false)}>Cancel</button>
-            <button type="button" onClick={submit}>Save</button>
-          </div>
-        </div>
+      <EntityFormModal open={modalOpen} title={editing ? 'Edit Parti' : 'Create Parti'} onClose={() => setModalOpen(false)} onSubmit={submit}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField label="Pan No" value={form.PanNo} onChange={(e) => setForm((f) => ({ ...f, PanNo: e.target.value }))} size="small" fullWidth />
+          <TextField label="Parti" value={form.Parti} onChange={(e) => setForm((f) => ({ ...f, Parti: e.target.value }))} size="small" fullWidth />
+          <TextField label="Address" value={form.Address} onChange={(e) => setForm((f) => ({ ...f, Address: e.target.value }))} size="small" fullWidth />
+          <TextField label="Email" value={form.Email} onChange={(e) => setForm((f) => ({ ...f, Email: e.target.value }))} size="small" fullWidth />
+          <TextField label="Contact No" value={form.Contact_No} onChange={(e) => setForm((f) => ({ ...f, Contact_No: e.target.value }))} size="small" fullWidth />
+        </Box>
       </EntityFormModal>
     </>
   );

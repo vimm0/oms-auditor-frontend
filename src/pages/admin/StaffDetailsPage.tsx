@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { EntityTable, ColumnDef } from '../../components/admin/EntityTable';
 import { EntityFormModal } from '../../components/admin/EntityFormModal';
+import { TextField, Box } from '@mui/material';
 import { apiGet, apiPost, apiPatch } from '../../lib/api';
 
 interface StaffDetailsRow {
@@ -65,17 +66,13 @@ export default function StaffDetailsPage() {
         onEdit={openEdit}
         getRowKey={(r) => r.ID}
       />
-      <EntityFormModal open={modalOpen} title={editing ? 'Edit Staff' : 'Create Staff'} onClose={() => setModalOpen(false)}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <label>Name <input value={form.sname} onChange={(e) => setForm((f) => ({ ...f, sname: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <label>Password <input type="password" value={form.spassword} onChange={(e) => setForm((f) => ({ ...f, spassword: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} placeholder={editing ? 'Leave blank to keep' : ''} /></label>
-          <label>Role <input value={form.sright} onChange={(e) => setForm((f) => ({ ...f, sright: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} placeholder="admin, account, Manager" /></label>
-          <label>Dressfine <input type="number" value={form.Dressfine} onChange={(e) => setForm((f) => ({ ...f, Dressfine: Number(e.target.value) || 0 }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
-            <button type="button" onClick={() => setModalOpen(false)}>Cancel</button>
-            <button type="button" onClick={submit}>Save</button>
-          </div>
-        </div>
+      <EntityFormModal open={modalOpen} title={editing ? 'Edit Staff' : 'Create Staff'} onClose={() => setModalOpen(false)} onSubmit={submit}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField label="Name" value={form.sname} onChange={(e) => setForm((f) => ({ ...f, sname: e.target.value }))} size="small" fullWidth />
+          <TextField label="Password" type="password" value={form.spassword} onChange={(e) => setForm((f) => ({ ...f, spassword: e.target.value }))} size="small" fullWidth placeholder={editing ? 'Leave blank to keep' : ''} />
+          <TextField label="Role" value={form.sright} onChange={(e) => setForm((f) => ({ ...f, sright: e.target.value }))} size="small" fullWidth placeholder="admin, account, Manager" />
+          <TextField label="Dressfine" type="number" value={form.Dressfine} onChange={(e) => setForm((f) => ({ ...f, Dressfine: Number(e.target.value) || 0 }))} size="small" fullWidth inputProps={{ min: 0 }} />
+        </Box>
       </EntityFormModal>
     </>
   );

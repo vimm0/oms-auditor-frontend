@@ -1,38 +1,50 @@
 import { ReactNode } from 'react';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  IconButton,
+} from '@mui/material';
+import { X } from 'lucide-react';
 
 interface EntityFormModalProps {
   open: boolean;
   title: string;
   onClose: () => void;
+  onSubmit?: () => void | Promise<void>;
+  submitLabel?: string;
   children: ReactNode;
 }
 
-export function EntityFormModal({ open, title, onClose, children }: EntityFormModalProps) {
-  if (!open) return null;
+export function EntityFormModal({
+  open,
+  title,
+  onClose,
+  onSubmit,
+  submitLabel = 'Save',
+  children,
+}: EntityFormModalProps) {
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(0,0,0,0.5)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 10,
-      }}
-      onClick={onClose}
-    >
-      <div
-        className="glass-panel"
-        style={{ padding: '1.5rem', minWidth: 320, maxWidth: 480, maxHeight: '90vh', overflow: 'auto' }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h3 style={{ margin: 0 }}>{title}</h3>
-          <button type="button" onClick={onClose}>×</button>
-        </div>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 2 } }}>
+      <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pr: 1 }}>
+        {title}
+        <IconButton size="small" onClick={onClose} aria-label="Close">
+          <X size={20} />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent dividers sx={{ display: 'flex', flexDirection: 'column', gap: 2, minHeight: 120 }}>
         {children}
-      </div>
-    </div>
+      </DialogContent>
+      <DialogActions sx={{ px: 3, py: 2 }}>
+        <Button onClick={onClose}>Cancel</Button>
+        {onSubmit && (
+          <Button variant="contained" onClick={onSubmit}>
+            {submitLabel}
+          </Button>
+        )}
+      </DialogActions>
+    </Dialog>
   );
 }

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { EntityTable, ColumnDef } from '../../components/admin/EntityTable';
 import { EntityFormModal } from '../../components/admin/EntityFormModal';
+import { TextField, Box } from '@mui/material';
 import { apiPost, apiPatch } from '../../lib/api';
 
 interface Row {
@@ -42,13 +43,12 @@ export default function LoginTrackerPage() {
   return (
     <>
       <EntityTable<Row> key={refetch} title="Login Tracker" basePath={BASE} columns={columns} onAdd={openCreate} onEdit={openEdit} getRowKey={(r) => r.ID} />
-      <EntityFormModal open={modalOpen} title={editing ? 'Edit' : 'Create'} onClose={() => setModalOpen(false)}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <label>User <input value={form.UserName} onChange={(e) => setForm((f) => ({ ...f, UserName: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <label>Date <input value={form.LoginoutDate} onChange={(e) => setForm((f) => ({ ...f, LoginoutDate: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <label>Remarks <input value={form.Remarks} onChange={(e) => setForm((f) => ({ ...f, Remarks: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}><button type="button" onClick={() => setModalOpen(false)}>Cancel</button><button type="button" onClick={submit}>Save</button></div>
-        </div>
+      <EntityFormModal open={modalOpen} title={editing ? 'Edit' : 'Create'} onClose={() => setModalOpen(false)} onSubmit={submit}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField label="User" value={form.UserName} onChange={(e) => setForm((f) => ({ ...f, UserName: e.target.value }))} size="small" fullWidth />
+          <TextField label="Date" value={form.LoginoutDate} onChange={(e) => setForm((f) => ({ ...f, LoginoutDate: e.target.value }))} size="small" fullWidth />
+          <TextField label="Remarks" value={form.Remarks} onChange={(e) => setForm((f) => ({ ...f, Remarks: e.target.value }))} size="small" fullWidth />
+        </Box>
       </EntityFormModal>
     </>
   );

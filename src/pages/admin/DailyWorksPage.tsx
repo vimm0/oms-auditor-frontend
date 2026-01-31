@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { EntityTable, ColumnDef } from '../../components/admin/EntityTable';
 import { EntityFormModal } from '../../components/admin/EntityFormModal';
+import { TextField, Box } from '@mui/material';
 import { apiPost, apiPatch } from '../../lib/api';
 
 interface Row {
@@ -44,16 +45,15 @@ export default function DailyWorksPage() {
   return (
     <>
       <EntityTable<Row> key={refetch} title="Daily Works" basePath={BASE} columns={columns} onAdd={openCreate} onEdit={openEdit} getRowKey={(r) => r.ID} />
-      <EntityFormModal open={modalOpen} title={editing ? 'Edit' : 'Create'} onClose={() => setModalOpen(false)}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-          <label>Pan No <input value={form.PanNo} onChange={(e) => setForm((f) => ({ ...f, PanNo: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <label>Parti Name <input value={form.PartiName} onChange={(e) => setForm((f) => ({ ...f, PartiName: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <label>User <input value={form.User} onChange={(e) => setForm((f) => ({ ...f, User: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <label>Type <input value={form.worktype} onChange={(e) => setForm((f) => ({ ...f, worktype: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <label>Work <input value={form.work} onChange={(e) => setForm((f) => ({ ...f, work: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <label>Remarks <input value={form.Remarks} onChange={(e) => setForm((f) => ({ ...f, Remarks: e.target.value }))} style={{ width: '100%', padding: '0.35rem' }} /></label>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}><button type="button" onClick={() => setModalOpen(false)}>Cancel</button><button type="button" onClick={submit}>Save</button></div>
-        </div>
+      <EntityFormModal open={modalOpen} title={editing ? 'Edit' : 'Create'} onClose={() => setModalOpen(false)} onSubmit={submit}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField label="Pan No" value={form.PanNo} onChange={(e) => setForm((f) => ({ ...f, PanNo: e.target.value }))} size="small" fullWidth />
+          <TextField label="Parti Name" value={form.PartiName} onChange={(e) => setForm((f) => ({ ...f, PartiName: e.target.value }))} size="small" fullWidth />
+          <TextField label="User" value={form.User} onChange={(e) => setForm((f) => ({ ...f, User: e.target.value }))} size="small" fullWidth />
+          <TextField label="Type" value={form.worktype} onChange={(e) => setForm((f) => ({ ...f, worktype: e.target.value }))} size="small" fullWidth />
+          <TextField label="Work" value={form.work} onChange={(e) => setForm((f) => ({ ...f, work: e.target.value }))} size="small" fullWidth />
+          <TextField label="Remarks" value={form.Remarks} onChange={(e) => setForm((f) => ({ ...f, Remarks: e.target.value }))} size="small" fullWidth />
+        </Box>
       </EntityFormModal>
     </>
   );
