@@ -12,6 +12,7 @@ import {
   Chip,
   TablePagination,
   Link,
+  Breadcrumbs,
 } from '@mui/material';
 import { useState, useMemo } from 'react';
 import { ADMIN_ROUTES_LIST, type AdminRouteRow } from './adminRoutes';
@@ -45,9 +46,14 @@ export default function AdminRoutesPage() {
 
   return (
     <Box>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Admin routes
-      </Typography>
+      <Breadcrumbs sx={{ mb: 1.5 }} separator=">" aria-label="breadcrumb">
+        <Link component={RouterLink} to="/admin" underline="none" color="inherit" sx={{ fontSize: '0.875rem' }}>
+          Admin
+        </Link>
+        <Typography color="text.primary" sx={{ fontWeight: 600, fontSize: '0.875rem' }}>
+          Routes
+        </Typography>
+      </Breadcrumbs>
       <Paper variant="outlined" sx={{ overflow: 'hidden', width: '100%' }}>
         <TableContainer sx={{ maxHeight: 'calc(100vh - 220px)', overflow: 'auto', width: '100%' }}>
           <Table stickyHeader size="small" sx={{ minWidth: '100%' }}>

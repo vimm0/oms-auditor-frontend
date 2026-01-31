@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { apiGet, apiDelete, PaginatedResponse } from '../../lib/api';
 import {
   Box,
@@ -22,8 +23,11 @@ import {
   DialogActions,
   CircularProgress,
   Alert,
+  Breadcrumbs,
+  Link,
+  InputAdornment,
 } from '@mui/material';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, ChevronDown, Search } from 'lucide-react';
 
 export interface ColumnDef<T> {
   key: keyof T | string;
@@ -60,6 +64,11 @@ function formatCellValue(val: unknown): React.ReactNode {
   return String(val);
 }
 
+export interface BreadcrumbSegment {
+  label: string;
+  path?: string;
+}
+
 interface EntityTableProps<T extends { ID: number }> {
   title: string;
   basePath: string;
@@ -67,6 +76,10 @@ interface EntityTableProps<T extends { ID: number }> {
   onAdd: () => void;
   onEdit: (row: T) => void;
   getRowKey: (row: T) => number;
+  /** Breadcrumb segments (e.g. [{ label: 'Admin', path: '/admin' }, { label: 'Staff Details' }]). Defaults to Admin > title. */
+  breadcrumbSegments?: BreadcrumbSegment[];
+  /** Search input placeholder. Defaults to "Search...". */
+  searchPlaceholder?: string;
 }
 
 export function EntityTable<T extends { ID: number }>({
@@ -76,7 +89,10 @@ export function EntityTable<T extends { ID: number }>({
   onAdd,
   onEdit,
   getRowKey,
+  breadcrumbSegments,
+  searchPlaceholder = 'Search...',
 }: EntityTableProps<T>) {
+  const segments = breadcrumbSegments ?? [{ label: 'Admin', path: '/admin' }, { label: title }];
   const [data, setData] = useState<PaginatedResponse<T> | null>(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(20);
@@ -191,18 +207,56 @@ export function EntityTable<T extends { ID: number }>({
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
-        <Typography variant="h6">{title}</Typography>
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          <TextField
-            size="small"
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            sx={{ minWidth: 160 }}
-          />
-          <Button variant="contained" onClick={onAdd}>Create</Button>
-        </Box>
+      <Breadcrumbs sx={{ mb: 1.5 }} separator=">" aria-label="breadcrumb">
+        {segments.map((seg, i) =>
+          seg.path != null ? (
+            <Link key={i} component={RouterLink} to={seg.path} underline="none" color="inherit" sx={{ fontSize: '0.875rem' }}>
+              {seg.label}
+            </Link>
+          ) : (
+            <Typography key={i} color="text.primary" sx={{ fontWeight: 600, fontSize: '0.875rem' }}>
+              {seg.label}
+            </Typography>
+          )
+        )}
+      </Breadcrumbs>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+        <Button
+          variant="outlined"
+          size="small"
+          endIcon={<ChevronDown size={18} />}
+          sx={{ bgcolor: 'grey.100', borderColor: 'grey.300', color: 'text.primary', textTransform: 'none' }}
+        >
+          Filters
+        </Button>
+        <TextField
+          size="small"
+          placeholder={searchPlaceholder}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search size={18} color="currentColor" />
+              </InputAdornment>
+            ),
+          }}
+          sx={{
+            flex: 1,
+            minWidth: 200,
+            '& .MuiOutlinedInput-root': {
+              backgroundColor: 'transparent',
+              '& fieldset': { borderColor: 'transparent' },
+              '&:hover': { backgroundColor: '#eeeeee' },
+              '&:hover fieldset': { borderColor: 'transparent' },
+              '&.Mui-focused': { outline: 'none', backgroundColor: '#eeeeee' },
+              '&.Mui-focused fieldset': { borderColor: 'transparent', borderWidth: 1, boxShadow: 'none' },
+            },
+          }}
+        />
+        <Button variant="contained" onClick={onAdd} size="small">
+          Create
+        </Button>
       </Box>
 
       <Paper variant="outlined" sx={{ overflow: 'hidden', width: '100%' }}>
