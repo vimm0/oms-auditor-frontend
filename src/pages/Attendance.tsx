@@ -1,91 +1,109 @@
 import { useState, useEffect } from 'react';
-import { Calendar, CheckCircle, Clock } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
+import {
+  Box,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+  Button,
+  Alert,
+} from '@mui/material';
 
 export default function Attendance() {
-    const [history, setHistory] = useState([]);
-    const [message, setMessage] = useState('');
+  const [history, setHistory] = useState<{ ID: number; Nepdate?: string; atttime?: string }[]>([]);
+  const [message, setMessage] = useState('');
 
-    const handleCheckIn = async () => {
-        // Current date logic (simplistic wrapper for demo)
-        const today = new Date();
-        const nepDate = "2080.10." + today.getDate(); // Mock Nepali date
+  const handleCheckIn = async () => {
+    const today = new Date();
+    const nepDate = '2080.10.' + today.getDate();
 
-        try {
-            const res = await fetch('http://127.0.0.1:8000/api/attendance/checkin', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    user_id: 1, // Mock user ID (should come from Auth context)
-                    nep_date: nepDate,
-                    nep_month: "10"
-                })
-            });
-            const data = await res.json();
-            setMessage(data.message);
-            loadHistory();
-        } catch (err) {
-            console.error(err);
-            setMessage("Failed to check in");
-        }
-    };
+    try {
+      const res = await fetch('http://127.0.0.1:8000/api/attendance/checkin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: 1,
+          nep_date: nepDate,
+          nep_month: '10',
+        }),
+      });
+      const data = await res.json();
+      setMessage(data.message);
+      loadHistory();
+    } catch (err) {
+      console.error(err);
+      setMessage('Failed to check in');
+    }
+  };
 
-    const loadHistory = async () => {
-        try {
-            const res = await fetch('http://127.0.0.1:8000/api/attendance/history/1');
-            const data = await res.json();
-            setHistory(data);
-        } catch (err) {
-            console.error(err);
-        }
-    };
+  const loadHistory = async () => {
+    try {
+      const res = await fetch('http://127.0.0.1:8000/api/attendance/history/1');
+      const data = await res.json();
+      setHistory(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    useEffect(() => {
-        loadHistory();
-    }, []);
+  useEffect(() => {
+    loadHistory();
+  }, []);
 
-    return (
-        <div className="page-container" style={{ flexDirection: 'column' }}>
-            <header className="glass-panel" style={{ padding: '1rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between' }}>
-                <h2>Attendance</h2>
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                    <button onClick={handleCheckIn} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <CheckCircle size={18} /> Check In Today
-                    </button>
-                </div>
-            </header>
+  return (
+    <div className="page-container" style={{ flexDirection: 'column' }}>
+      <Box component="header" sx={{ p: 2, mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderRadius: 1, bgcolor: 'background.paper' }}>
+        <Typography variant="h6">Attendance</Typography>
+        <Button variant="contained" startIcon={<CheckCircle size={18} />} onClick={handleCheckIn}>
+          Check In Today
+        </Button>
+      </Box>
 
-            {message && (
-                <div style={{ padding: '1rem', background: 'rgba(59, 130, 246, 0.2)', borderRadius: '8px', marginBottom: '1rem' }}>
-                    {message}
-                </div>
-            )}
+      {message && (
+        <Alert severity="info" sx={{ mb: 2 }} onClose={() => setMessage('')}>
+          {message}
+        </Alert>
+      )}
 
-            <div className="glass-panel" style={{ padding: '2rem' }}>
-                <h3>History</h3>
-                <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '1rem' }}>
-                    <thead>
-                        <tr style={{ textAlign: 'left', borderBottom: '1px solid var(--glass-border)' }}>
-                            <th style={{ padding: '0.5rem' }}>Date (Nep)</th>
-                            <th style={{ padding: '0.5rem' }}>Time</th>
-                            <th style={{ padding: '0.5rem' }}>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {history.map((record: any) => (
-                            <tr key={record.ID} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                                <td style={{ padding: '0.5rem' }}>{record.Nepdate}</td>
-                                <td style={{ padding: '0.5rem' }}>{new Date(record.atttime).toLocaleTimeString()}</td>
-                                <td style={{ padding: '0.5rem' }}>
-                                    <span style={{ padding: '2px 8px', borderRadius: '4px', background: '#22c55e', fontSize: '0.8rem' }}>Present</span>
-                                </td>
-                            </tr>
-                        ))}
-                        {history.length === 0 && (
-                            <tr><td colSpan={3} style={{ padding: '1rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No records found</td></tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
+      <Paper variant="outlined" sx={{ p: 2 }}>
+        <Typography variant="subtitle1" sx={{ mb: 2 }}>History</Typography>
+        <TableContainer>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 600 }}>Date (Nep)</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Time</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {history.map((record) => (
+                <TableRow key={record.ID} hover>
+                  <TableCell>{record.Nepdate ?? '—'}</TableCell>
+                  <TableCell>{record.atttime ? new Date(record.atttime).toLocaleTimeString() : '—'}</TableCell>
+                  <TableCell>
+                    <Typography component="span" sx={{ px: 1, py: 0.5, borderRadius: 1, bgcolor: 'success.main', color: 'success.contrastText', fontSize: '0.8rem' }}>
+                      Present
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {history.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={3} align="center" sx={{ py: 3, color: 'text.secondary' }}>
+                    No records found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
+    </div>
+  );
 }

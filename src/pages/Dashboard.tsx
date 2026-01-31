@@ -8,7 +8,7 @@ const linkStyle: React.CSSProperties = {
     gap: '0.5rem',
     padding: '0.5rem 0.75rem',
     borderRadius: 8,
-    background: 'rgba(255,255,255,0.05)',
+    background: 'var(--bg-subtle, rgba(0,0,0,0.06))',
     color: 'inherit',
     textDecoration: 'none',
     fontSize: '0.875rem',
@@ -96,7 +96,7 @@ function StatCard({ title, value, icon }: { title: string, value: string, icon: 
         <div className="glass-panel" style={{ padding: '1.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
                 <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>{title}</span>
-                <div style={{ padding: '0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                <div style={{ padding: '0.5rem', background: 'var(--bg-subtle, rgba(0,0,0,0.06))', borderRadius: '8px' }}>
                     {icon}
                 </div>
             </div>

@@ -1,5 +1,6 @@
 import { Outlet, NavLink } from 'react-router-dom';
 import {
+  Route as RouteIcon,
   Users,
   LogIn,
   Calendar,
@@ -13,6 +14,7 @@ import {
 import { ADMIN_ENTITY_ROUTES } from './adminEntities';
 
 const customEntities = [
+  { path: 'routes', label: 'Routes', icon: RouteIcon },
   { path: 'staff-details', label: 'Staff', icon: Users },
   { path: 'login-tracker', label: 'Login Tracker', icon: LogIn },
   { path: 'attendance', label: 'Attendance', icon: Calendar },
@@ -55,7 +57,7 @@ export default function AdminLayout() {
                 alignItems: 'center',
                 gap: '0.5rem',
                 padding: '0.5rem 1rem',
-                color: isActive ? 'var(--accent, #3b82f6)' : 'inherit',
+                color: isActive ? 'var(--accent-primary, #1976d2)' : 'inherit',
                 textDecoration: 'none',
               })}
             >

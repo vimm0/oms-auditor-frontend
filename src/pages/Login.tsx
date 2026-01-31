@@ -37,13 +37,13 @@ export default function Login() {
     return (
         <div className="page-container" style={{ justifyContent: 'center', alignItems: 'center' }}>
             <div className="glass-panel" style={{ padding: '3rem', width: '400px', textAlign: 'center' }}>
-                <h1 style={{ fontSize: '2rem', marginBottom: '2rem', background: 'linear-gradient(to right, #60a5fa, #a855f7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                <h1 style={{ fontSize: '2rem', marginBottom: '2rem', background: 'linear-gradient(to right, #1976d2, #1565c0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                     OMS Auditor
                 </h1>
 
                 <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     <div style={{ position: 'relative' }}>
-                        <User size={20} style={{ position: 'absolute', left: '12px', top: '12px', color: '#94a3b8' }} />
+                        <User size={20} style={{ position: 'absolute', left: '12px', top: '12px', color: '#666' }} />
                         <input
                             className="input-field"
                             style={{ paddingLeft: '40px' }}
@@ -55,7 +55,7 @@ export default function Login() {
                     </div>
 
                     <div style={{ position: 'relative' }}>
-                        <Lock size={20} style={{ position: 'absolute', left: '12px', top: '12px', color: '#94a3b8' }} />
+                        <Lock size={20} style={{ position: 'absolute', left: '12px', top: '12px', color: '#666' }} />
                         <input
                             className="input-field"
                             style={{ paddingLeft: '40px' }}
@@ -73,7 +73,7 @@ export default function Login() {
                     {error && <p style={{ color: '#ef4444', marginTop: '0.5rem' }}>{error}</p>}
                 </form>
 
-                <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center', gap: '0.5rem', color: '#64748b', fontSize: '0.875rem' }}>
+                <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'center', gap: '0.5rem', color: '#666', fontSize: '0.875rem' }}>
                     <Monitor size={16} />
                     <span>System v2.0 (Modern)</span>
                 </div>
