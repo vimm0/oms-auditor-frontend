@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Outlet, useNavigate, NavLink, useLocation } from 'react-router-dom';
 import {
   Box,
@@ -75,6 +75,9 @@ const adminGenericItems = Object.entries(ADMIN_ENTITY_ROUTES).map(([path, { titl
 
 const adminNavItems = [...adminCustomItems, ...adminGenericItems];
 
+/** Max number of nav items shown in the command palette modal. */
+const NAV_MODAL_MAX_ITEMS = 8;
+
 /** All routes for the command palette: main + admin. */
 const allNavRoutes: { path: string; label: string }[] = [
   ...mainNavItems.map(({ to, label }) => ({ path: to, label })),
@@ -87,6 +90,7 @@ export default function MainLayout() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
   const [adminExpanded, setAdminExpanded] = useState(false);
   const navigate = useNavigate();
@@ -387,6 +391,9 @@ export default function MainLayout() {
         onClose={() => { setSearchModalOpen(false); setSearchQuery(''); }}
         maxWidth="sm"
         fullWidth
+        TransitionProps={{
+          onEntered: () => searchInputRef.current?.focus(),
+        }}
         PaperProps={{
           sx: {
             borderRadius: 2,
@@ -398,13 +405,13 @@ export default function MainLayout() {
       >
         <DialogContent sx={{ p: 0, '&:first-of-type': { pt: 0 } }}>
           <TextField
+            inputRef={searchInputRef}
             fullWidth
             placeholder="Type '?' to see available actions"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             variant="outlined"
             size="small"
-            autoFocus
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
@@ -432,6 +439,7 @@ export default function MainLayout() {
                     r.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
                     r.path.toLowerCase().includes(searchQuery.toLowerCase())
                 )
+                .slice(0, NAV_MODAL_MAX_ITEMS)
                 .map(({ path, label }) => (
                   <ListItemButton
                     key={path}
