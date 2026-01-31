@@ -15,7 +15,6 @@ interface Row {
 
 const BASE = '/api/admin/daily-works';
 const columns: ColumnDef<Row>[] = [
-  { key: 'ID', label: 'ID' },
   { key: 'PanNo', label: 'Pan No' },
   { key: 'PartiName', label: 'Parti Name' },
   { key: 'User', label: 'User' },

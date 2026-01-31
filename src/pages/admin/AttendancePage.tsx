@@ -14,7 +14,6 @@ interface Row {
 
 const BASE = '/api/admin/attendance';
 const columns: ColumnDef<Row>[] = [
-  { key: 'ID', label: 'ID' },
   { key: 'empid', label: 'Emp ID' },
   { key: 'Attdate', label: 'Att Date' },
   { key: 'Nepdate', label: 'Nep Date' },

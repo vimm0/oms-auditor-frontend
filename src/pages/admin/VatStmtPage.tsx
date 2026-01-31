@@ -14,7 +14,6 @@ interface Row {
 
 const BASE = '/api/admin/vat-stmt';
 const columns: ColumnDef<Row>[] = [
-  { key: 'ID', label: 'ID' },
   { key: 'Fiscalyear', label: 'Fiscal Year' },
   { key: 'Months', label: 'Months' },
   { key: 'Parti', label: 'Parti' },

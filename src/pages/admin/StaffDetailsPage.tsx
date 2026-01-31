@@ -13,7 +13,6 @@ interface StaffDetailsRow {
 
 const BASE = '/api/admin/staff-details';
 const columns: ColumnDef<StaffDetailsRow>[] = [
-  { key: 'ID', label: 'ID' },
   { key: 'sname', label: 'Name' },
   { key: 'sright', label: 'Status' },
   { key: 'Dressfine', label: 'Dressfine' },

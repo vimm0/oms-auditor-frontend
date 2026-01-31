@@ -14,7 +14,6 @@ interface Row {
 
 const BASE = '/api/admin/ver-files';
 const columns: ColumnDef<Row>[] = [
-  { key: 'ID', label: 'ID' },
   { key: 'parti', label: 'Parti' },
   { key: 'year', label: 'Year' },
   { key: 'Transaction', label: 'Transaction' },

@@ -14,7 +14,6 @@ interface Row {
 
 const BASE = '/api/admin/login-tracker';
 const columns: ColumnDef<Row>[] = [
-  { key: 'ID', label: 'ID' },
   { key: 'UserName', label: 'User' },
   { key: 'LoginoutDate', label: 'Date' },
   { key: 'LoginTime', label: 'Login' },

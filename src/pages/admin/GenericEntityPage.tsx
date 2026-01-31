@@ -17,7 +17,6 @@ interface GenericEntityPageProps {
 }
 
 const defaultColumns: ColumnDef<GenericRow>[] = [
-  { key: 'ID', label: 'ID' },
   { key: 'created_at', label: 'Created' },
 ];
 

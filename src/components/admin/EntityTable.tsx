@@ -28,6 +28,27 @@ export interface ColumnDef<T> {
   render?: (row: T) => React.ReactNode;
 }
 
+/** Format a cell value: dates as YYYY-MM-DD, else string. */
+function formatCellValue(val: unknown): React.ReactNode {
+  if (val == null) return '';
+  if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val)) {
+    return val.slice(0, 10);
+  }
+  if (typeof val === 'string' && val.includes('T')) {
+    try {
+      const d = new Date(val);
+      if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+    } catch {
+      // fall through
+    }
+  }
+  if (typeof val === 'number' && val > 1e10) {
+    const d = new Date(val);
+    if (!Number.isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+  }
+  return String(val);
+}
+
 interface EntityTableProps<T extends { ID: number }> {
   title: string;
   basePath: string;
@@ -156,7 +177,7 @@ export function EntityTable<T extends { ID: number }>({
                   <TableRow key={getRowKey(row)} hover>
                     {columns.map((col) => (
                       <TableCell key={String(col.key)}>
-                        {col.render ? col.render(row) : String((row as Record<string, unknown>)[col.key as string] ?? '')}
+                        {col.render ? col.render(row) : formatCellValue((row as Record<string, unknown>)[col.key as string])}
                       </TableCell>
                     ))}
                     <TableCell align="right">

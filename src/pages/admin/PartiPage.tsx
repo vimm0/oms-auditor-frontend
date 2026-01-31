@@ -13,7 +13,6 @@ interface PartiRow {
 
 const BASE = '/api/admin/parti';
 const columns: ColumnDef<PartiRow>[] = [
-  { key: 'ID', label: 'ID' },
   { key: 'PanNo', label: 'Pan No' },
   { key: 'Parti', label: 'Parti' },
   { key: 'Address', label: 'Address' },

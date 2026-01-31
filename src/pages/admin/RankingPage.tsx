@@ -13,7 +13,6 @@ interface Row {
 
 const BASE = '/api/admin/ranking';
 const columns: ColumnDef<Row>[] = [
-  { key: 'ID', label: 'ID' },
   { key: 'PanNo', label: 'Pan No' },
   { key: 'Fiscalyear', label: 'Fiscal Year' },
   { key: 'ttlsale', label: 'Total Sale' },
