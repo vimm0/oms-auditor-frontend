@@ -1,5 +1,18 @@
 import { useEffect, useState } from 'react';
-import { BarChart3, PieChart, Users, FileText } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { BarChart3, PieChart, Users, FileText, LayoutDashboard } from 'lucide-react';
+
+const linkStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    padding: '0.5rem 0.75rem',
+    borderRadius: 8,
+    background: 'rgba(255,255,255,0.05)',
+    color: 'inherit',
+    textDecoration: 'none',
+    fontSize: '0.875rem',
+};
 
 interface Stats {
     ten_crore_plus: number;
@@ -53,6 +66,26 @@ export default function Dashboard() {
                 <p style={{ color: 'var(--text-secondary)' }}>
                     Detailed visualization would go here using chart.js or recharts.
                 </p>
+            </div>
+
+            <div className="glass-panel" style={{ marginTop: '2rem', padding: '2rem' }}>
+                <h3 style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <LayoutDashboard size={20} /> All Routes
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.75rem' }}>
+                    <Link to="/dashboard" className="route-link" style={linkStyle}>Dashboard</Link>
+                    <Link to="/attendance" className="route-link" style={linkStyle}>Attendance</Link>
+                    <Link to="/vat" className="route-link" style={linkStyle}>VAT Statement</Link>
+                    <Link to="/import" className="route-link" style={linkStyle}>Import Data</Link>
+                    <Link to="/admin/staff-details" className="route-link" style={linkStyle}>Admin: Staff</Link>
+                    <Link to="/admin/login-tracker" className="route-link" style={linkStyle}>Admin: Login Tracker</Link>
+                    <Link to="/admin/attendance" className="route-link" style={linkStyle}>Admin: Attendance</Link>
+                    <Link to="/admin/ver-files" className="route-link" style={linkStyle}>Admin: Ver Files</Link>
+                    <Link to="/admin/ranking" className="route-link" style={linkStyle}>Admin: Ranking</Link>
+                    <Link to="/admin/vat-stmt" className="route-link" style={linkStyle}>Admin: VAT Stmt</Link>
+                    <Link to="/admin/parti" className="route-link" style={linkStyle}>Admin: Parti</Link>
+                    <Link to="/admin/daily-works" className="route-link" style={linkStyle}>Admin: Daily Works</Link>
+                </div>
             </div>
         </div>
     );
