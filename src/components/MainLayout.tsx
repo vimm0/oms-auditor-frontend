@@ -158,6 +158,7 @@ export default function MainLayout() {
         {isDesktop ? (
           <IconButton
             size="small"
+            sx={{ borderRadius: 2 }}
             onClick={() => setDrawerCollapsed((c) => !c)}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
@@ -209,18 +210,13 @@ export default function MainLayout() {
           );
         })}
         <ListItemButton
-          onClick={() => {
-            if (collapsed) {
-              navigate('/admin');
-            } else {
-              setAdminExpanded((v) => !v);
-            }
-          }}
           component="button"
+          onClick={() => collapsed && navigate('/admin')}
           sx={{
             py: 1.25,
             px: collapsed ? 2 : 2.5,
             justifyContent: collapsed ? 'center' : 'flex-start',
+            width: '100%',
             borderRadius: 0,
             bgcolor: adminOpen ? 'action.hover' : 'transparent',
             '&:hover': { bgcolor: 'action.hover' },
@@ -230,18 +226,32 @@ export default function MainLayout() {
             <Settings size={20} />
           </ListItemIcon>
           {!collapsed && (
-            <>
+            <Box
+              sx={{
+                flex: 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                minWidth: 0,
+              }}
+            >
               <ListItemText
                 primary="Admin"
                 primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: adminOpen ? 600 : 400 }}
-                sx={{ my: 0 }}
+                sx={{ my: 0, flexShrink: 0 }}
               />
-              {adminOpen ? (
-                <ChevronDown size={18} style={{ color: 'var(--mui-palette-text-secondary)', flexShrink: 0 }} />
-              ) : (
-                <ChevronRight size={18} style={{ color: 'var(--mui-palette-text-secondary)', flexShrink: 0 }} />
-              )}
-            </>
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAdminExpanded((v) => !v);
+                }}
+                aria-label={adminOpen ? 'Collapse admin menu' : 'Expand admin menu'}
+                sx={{ ml: 0.5, color: 'text.secondary', borderRadius: 2 }}
+              >
+                {adminOpen ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
+              </IconButton>
+            </Box>
           )}
         </ListItemButton>
         {!collapsed && adminOpen &&
@@ -281,7 +291,7 @@ export default function MainLayout() {
           size="medium"
           onClick={() => setSearchModalOpen(true)}
           aria-label="Search"
-          sx={{ mx: 'auto', mb: 1 }}
+          sx={{ mx: 'auto', mb: 1, borderRadius: 2 }}
         >
           <SearchIcon size={20} />
         </IconButton>
@@ -379,7 +389,7 @@ export default function MainLayout() {
           edge="start"
           onClick={() => setDrawerOpen(true)}
           aria-label="Open menu"
-          sx={{ mr: 1 }}
+          sx={{ mr: 1, borderRadius: 2 }}
         >
           <MenuIcon size={24} />
         </IconButton>
