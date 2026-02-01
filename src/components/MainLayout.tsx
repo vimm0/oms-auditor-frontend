@@ -114,8 +114,8 @@ export default function MainLayout() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  const drawerVariant = isDesktop ? 'permanent' : 'temporary';
-  const drawerOpenState = isDesktop ? true : drawerOpen;
+  const drawerVariant = 'temporary'; //isDesktop ? 'permanent' : 'temporary';
+  const drawerOpenState = drawerOpen; //isDesktop ? true : drawerOpen;
 
   const handleUserMenuOpen = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
@@ -146,11 +146,16 @@ export default function MainLayout() {
         <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1rem', color: 'text.primary' }}>
           OMS Auditor
         </Typography>
-        {!isDesktop && (
+        {/* {!isDesktop && (
           <IconButton size="small" onClick={() => setDrawerOpen(false)} aria-label="Close menu">
             <X size={20} />
           </IconButton>
-        )}
+        )} */}
+
+        <IconButton size="small" onClick={() => setDrawerOpen(false)} aria-label="Close menu">
+          <X size={20} />
+        </IconButton>
+
       </Box>
 
       <List sx={{ flex: 1, overflow: 'auto', py: 1.5, px: 0 }}>
@@ -293,7 +298,7 @@ export default function MainLayout() {
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      <Toolbar
+      {/* <Toolbar
         variant="dense"
         sx={{
           position: 'fixed',
@@ -307,8 +312,16 @@ export default function MainLayout() {
           bgcolor: 'background.paper',
           display: isDesktop ? 'none' : 'flex',
         }}
-      >
-        <IconButton
+      > */}
+        {/* <IconButton
+          edge="start"
+          onClick={() => setDrawerOpen(true)}
+          aria-label="Open menu"
+          sx={{ mr: 1 }}
+        >
+          <MenuIcon size={24} />
+        </IconButton> */}
+       <IconButton
           edge="start"
           onClick={() => setDrawerOpen(true)}
           aria-label="Open menu"
@@ -316,7 +329,7 @@ export default function MainLayout() {
         >
           <MenuIcon size={24} />
         </IconButton>
-      </Toolbar>
+        {/* </Toolbar> */}
 
       <Drawer
         variant={drawerVariant}
@@ -327,12 +340,12 @@ export default function MainLayout() {
           '& .MuiDrawer-paper': {
             width: DRAWER_WIDTH,
             boxSizing: 'border-box',
-            ...(isDesktop && {
-              position: 'fixed',
+            ...{
+              // position: 'fixed',
               borderRight: 1,
               borderColor: 'divider',
               boxShadow: '2px 0 8px rgba(0,0,0,0.06)',
-            }),
+            },
           },
         }}
       >
@@ -345,12 +358,13 @@ export default function MainLayout() {
           flex: 1,
           px: 3,
           py: 2.5,
-          pt: isDesktop ? 2.5 : 7,
+          // pt: isDesktop ? 2.5 : 7,
+          pt: 2.5,
           width: '100%',
           minWidth: 0,
           display: 'flex',
           flexDirection: 'column',
-          ...(isDesktop && { ml: `${DRAWER_WIDTH}px` }),
+          ...{ ml: `${DRAWER_WIDTH}px` },
         }}
       >
         <Outlet />
