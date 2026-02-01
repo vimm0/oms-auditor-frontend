@@ -43,10 +43,13 @@ import {
   Database,
   MoreVertical,
   Search as SearchIcon,
+  PanelLeftClose,
+  PanelRightOpen,
 } from 'lucide-react';
 import { ADMIN_ENTITY_ROUTES } from '../pages/admin/adminEntities';
 
 const DRAWER_WIDTH = 280;
+const DRAWER_COLLAPSED_WIDTH = 72;
 
 const mainNavItems = [
   { to: '/dashboard', label: 'Home', icon: LayoutDashboard },
@@ -88,6 +91,7 @@ export default function MainLayout() {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up('md'));
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [drawerCollapsed, setDrawerCollapsed] = useState(false);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -114,8 +118,10 @@ export default function MainLayout() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  const drawerVariant = 'temporary'; //isDesktop ? 'permanent' : 'temporary';
-  const drawerOpenState = drawerOpen; //isDesktop ? true : drawerOpen;
+  const drawerVariant = isDesktop ? 'permanent' : 'temporary';
+  const drawerOpenState = isDesktop ? true : drawerOpen;
+  const collapsed = isDesktop && drawerCollapsed;
+  const drawerWidth = isDesktop && drawerCollapsed ? DRAWER_COLLAPSED_WIDTH : DRAWER_WIDTH;
 
   const handleUserMenuOpen = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
@@ -131,34 +137,44 @@ export default function MainLayout() {
 
   const drawerContent = (
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {/* Header: when expanded = title + collapse button (right); when collapsed = icon + expand button (right); mobile = title + close (X) */}
       <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
-          px: 2.5,
+          justifyContent: collapsed ? 'flex-end' : 'space-between',
+          px: collapsed ? 2 : 2.5,
           py: 2,
           minHeight: 56,
           borderBottom: 1,
           borderColor: 'divider',
         }}
       >
-        <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1rem', color: 'text.primary' }}>
-          OMS Auditor
-        </Typography>
-        {/* {!isDesktop && (
+        {!collapsed && (
+          <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1rem', color: 'text.primary' }}>
+            OMS Auditor
+          </Typography>
+        )}
+        {isDesktop ? (
+          <IconButton
+            size="small"
+            onClick={() => setDrawerCollapsed((c) => !c)}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {collapsed ? (
+              <PanelRightOpen size={20} />
+            ) : (
+              <PanelLeftClose size={20} />
+            )}
+          </IconButton>
+        ) : (
           <IconButton size="small" onClick={() => setDrawerOpen(false)} aria-label="Close menu">
             <X size={20} />
           </IconButton>
-        )} */}
-
-        <IconButton size="small" onClick={() => setDrawerOpen(false)} aria-label="Close menu">
-          <X size={20} />
-        </IconButton>
-
+        )}
       </Box>
 
-      <List sx={{ flex: 1, overflow: 'auto', py: 1.5, px: 0 }}>
+      <List sx={{ flex: 1, overflow: 'auto', py: 1.5, px: collapsed ? 0 : 0 }}>
         {mainNavItems.map(({ to, label, icon: Icon }) => {
           const selected = location.pathname === to;
           return (
@@ -166,11 +182,12 @@ export default function MainLayout() {
               key={to}
               component={NavLink}
               to={to}
-              onClick={() => setDrawerOpen(false)}
+              onClick={() => !isDesktop && setDrawerOpen(false)}
               selected={selected}
               sx={{
                 py: 1.25,
-                px: 2.5,
+                px: collapsed ? 2 : 2.5,
+                justifyContent: collapsed ? 'center' : 'flex-start',
                 borderRadius: 0,
                 '&.Mui-selected': {
                   bgcolor: 'action.hover',
@@ -178,42 +195,56 @@ export default function MainLayout() {
                 },
               }}
             >
-              <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>
+              <ListItemIcon sx={{ minWidth: collapsed ? 0 : 40, color: 'text.secondary', justifyContent: 'center' }}>
                 <Icon size={20} />
               </ListItemIcon>
-              <ListItemText
-                primary={label}
-                primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: selected ? 600 : 400 }}
-                sx={{ my: 0 }}
-              />
+              {!collapsed && (
+                <ListItemText
+                  primary={label}
+                  primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: selected ? 600 : 400 }}
+                  sx={{ my: 0 }}
+                />
+              )}
             </ListItemButton>
           );
         })}
         <ListItemButton
-          onClick={() => setAdminExpanded((v) => !v)}
+          onClick={() => {
+            if (collapsed) {
+              navigate('/admin');
+            } else {
+              setAdminExpanded((v) => !v);
+            }
+          }}
+          component="button"
           sx={{
             py: 1.25,
-            px: 2.5,
+            px: collapsed ? 2 : 2.5,
+            justifyContent: collapsed ? 'center' : 'flex-start',
             borderRadius: 0,
             bgcolor: adminOpen ? 'action.hover' : 'transparent',
             '&:hover': { bgcolor: 'action.hover' },
           }}
         >
-          <ListItemIcon sx={{ minWidth: 40, color: 'text.secondary' }}>
+          <ListItemIcon sx={{ minWidth: collapsed ? 0 : 40, color: 'text.secondary', justifyContent: 'center' }}>
             <Settings size={20} />
           </ListItemIcon>
-          <ListItemText
-            primary="Admin"
-            primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: adminOpen ? 600 : 400 }}
-            sx={{ my: 0 }}
-          />
-          {adminOpen ? (
-            <ChevronDown size={18} style={{ color: 'var(--mui-palette-text-secondary)', flexShrink: 0 }} />
-          ) : (
-            <ChevronRight size={18} style={{ color: 'var(--mui-palette-text-secondary)', flexShrink: 0 }} />
+          {!collapsed && (
+            <>
+              <ListItemText
+                primary="Admin"
+                primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: adminOpen ? 600 : 400 }}
+                sx={{ my: 0 }}
+              />
+              {adminOpen ? (
+                <ChevronDown size={18} style={{ color: 'var(--mui-palette-text-secondary)', flexShrink: 0 }} />
+              ) : (
+                <ChevronRight size={18} style={{ color: 'var(--mui-palette-text-secondary)', flexShrink: 0 }} />
+              )}
+            </>
           )}
         </ListItemButton>
-        {adminOpen &&
+        {!collapsed && adminOpen &&
           adminNavItems.map(({ path, label }) => {
             const to = `/admin/${path}`;
             const selected = location.pathname === to;
@@ -222,7 +253,7 @@ export default function MainLayout() {
                 key={path}
                 component={NavLink}
                 to={to}
-                onClick={() => setDrawerOpen(false)}
+                onClick={() => !isDesktop && setDrawerOpen(false)}
                 selected={selected}
                 sx={{
                   py: 1.25,
@@ -245,65 +276,96 @@ export default function MainLayout() {
           })}
       </List>
 
-      <Box
-        role="button"
-        tabIndex={0}
-        onClick={() => setSearchModalOpen(true)}
-        onKeyDown={(e) => e.key === 'Enter' && setSearchModalOpen(true)}
-        sx={{
-          flexShrink: 0,
-          mx: 2.5,
-          mb: 1.5,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          py: 1,
-          px: 1.5,
-          borderRadius: 1,
-          border: 1,
-          borderColor: 'divider',
-          bgcolor: 'action.hover',
-          color: 'text.secondary',
-          fontSize: '0.8125rem',
-          cursor: 'pointer',
-          '&:hover': { bgcolor: 'action.selected' },
-        }}
-      >
-        <Typography component="span" sx={{ flex: 1, fontSize: 'inherit' }}>
-          Search
-        </Typography>
-        <Typography component="span" sx={{ fontSize: 'inherit', opacity: 0.8 }}>
-          ⌘K
-        </Typography>
-      </Box>
+      {collapsed ? (
+        <IconButton
+          size="medium"
+          onClick={() => setSearchModalOpen(true)}
+          aria-label="Search"
+          sx={{ mx: 'auto', mb: 1 }}
+        >
+          <SearchIcon size={20} />
+        </IconButton>
+      ) : (
+        <Box
+          role="button"
+          tabIndex={0}
+          onClick={() => setSearchModalOpen(true)}
+          onKeyDown={(e) => e.key === 'Enter' && setSearchModalOpen(true)}
+          sx={{
+            flexShrink: 0,
+            mx: 2.5,
+            mb: 1.5,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
+            py: 1,
+            px: 1.5,
+            borderRadius: 1,
+            border: 1,
+            borderColor: 'divider',
+            bgcolor: 'action.hover',
+            color: 'text.secondary',
+            fontSize: '0.8125rem',
+            cursor: 'pointer',
+            '&:hover': { bgcolor: 'action.selected' },
+          }}
+        >
+          <Typography component="span" sx={{ flex: 1, fontSize: 'inherit' }}>
+            Search
+          </Typography>
+          <Typography component="span" sx={{ fontSize: 'inherit', opacity: 0.8 }}>
+            ⌘K
+          </Typography>
+        </Box>
+      )}
 
       <Divider />
-      <Box sx={{ px: 2.5, py: 2, display: 'flex', alignItems: 'center', gap: 1.5, minHeight: 72 }}>
+      <Box
+        component="button"
+        onClick={handleUserMenuOpen}
+        aria-label="User menu"
+        sx={{
+          border: 0,
+          background: 'none',
+          cursor: 'pointer',
+          width: '100%',
+          px: collapsed ? 1.5 : 2.5,
+          py: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: collapsed ? 'center' : 'flex-start',
+          gap: 1.5,
+          minHeight: 72,
+          '&:hover': { bgcolor: 'action.hover' },
+        }}
+      >
         <Avatar sx={{ width: 40, height: 40, bgcolor: 'primary.main', fontSize: '0.875rem', flexShrink: 0 }}>
           U
         </Avatar>
-        <ListItemText
-          primary="User"
-          secondary="user@example.com"
-          primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 600 }}
-          secondaryTypographyProps={{ fontSize: '0.75rem', color: 'text.secondary' }}
-          sx={{ flex: 1, minWidth: 0, my: 0 }}
-        />
-        <IconButton size="small" onClick={handleUserMenuOpen} aria-label="User menu" sx={{ flexShrink: 0 }}>
-          <MoreVertical size={20} />
-        </IconButton>
+        {!collapsed && (
+          <>
+            <ListItemText
+              primary="User"
+              secondary="user@example.com"
+              primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 600 }}
+              secondaryTypographyProps={{ fontSize: '0.75rem', color: 'text.secondary' }}
+              sx={{ flex: 1, minWidth: 0, my: 0 }}
+            />
+            <MoreVertical size={20} style={{ flexShrink: 0, opacity: 0.7 }} />
+          </>
+        )}
       </Box>
     </Box>
   );
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-      {/* <Toolbar
+      <Toolbar
         variant="dense"
         sx={{
           position: 'fixed',
           top: 0,
-          left: isDesktop ? DRAWER_WIDTH : 0,
+          left: isDesktop ? drawerWidth : 0,
           right: 0,
           zIndex: theme.zIndex.drawer - 1,
           borderBottom: 1,
@@ -312,16 +374,8 @@ export default function MainLayout() {
           bgcolor: 'background.paper',
           display: isDesktop ? 'none' : 'flex',
         }}
-      > */}
-        {/* <IconButton
-          edge="start"
-          onClick={() => setDrawerOpen(true)}
-          aria-label="Open menu"
-          sx={{ mr: 1 }}
-        >
-          <MenuIcon size={24} />
-        </IconButton> */}
-       <IconButton
+      >
+        <IconButton
           edge="start"
           onClick={() => setDrawerOpen(true)}
           aria-label="Open menu"
@@ -329,7 +383,7 @@ export default function MainLayout() {
         >
           <MenuIcon size={24} />
         </IconButton>
-        {/* </Toolbar> */}
+      </Toolbar>
 
       <Drawer
         variant={drawerVariant}
@@ -338,14 +392,14 @@ export default function MainLayout() {
         onClose={() => setDrawerOpen(false)}
         sx={{
           '& .MuiDrawer-paper': {
-            width: DRAWER_WIDTH,
+            width: drawerWidth,
             boxSizing: 'border-box',
-            ...{
-              // position: 'fixed',
+            ...(isDesktop && {
+              position: 'fixed',
               borderRight: 1,
               borderColor: 'divider',
               boxShadow: '2px 0 8px rgba(0,0,0,0.06)',
-            },
+            }),
           },
         }}
       >
@@ -358,13 +412,12 @@ export default function MainLayout() {
           flex: 1,
           px: 3,
           py: 2.5,
-          // pt: isDesktop ? 2.5 : 7,
-          pt: 2.5,
+          pt: isDesktop ? 2.5 : 7,
           width: '100%',
           minWidth: 0,
           display: 'flex',
           flexDirection: 'column',
-          ...{ ml: `${DRAWER_WIDTH}px` },
+          ...(isDesktop && { ml: `${drawerWidth}px` }),
         }}
       >
         <Outlet />
