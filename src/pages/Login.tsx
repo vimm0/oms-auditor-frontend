@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, User, Monitor } from 'lucide-react';
+import { setCachedUser } from '../lib/userCache';
+
+const API_BASE = (import.meta as unknown as { env: { VITE_API_URL?: string } }).env?.VITE_API_URL ?? 'http://127.0.0.1:8000';
 
 export default function Login() {
     const [userId, setUserId] = useState('');
@@ -11,19 +14,23 @@ export default function Login() {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const response = await fetch('http://127.0.0.1:8000/api/login', {
+            const response = await fetch(`${API_BASE}/api/login`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    user_id: parseInt(userId),
-                    password: password,
-                    computer_name: 'MacBook-Client' // Mock or get from Tauri/Browser
+                    user_id: parseInt(userId, 10),
+                    password,
+                    computer_name: 'MacBook-Client',
                 }),
             });
 
             if (response.ok) {
+                const data = await response.json() as { user_name?: string; right?: string };
+                setCachedUser({
+                    user_name: data.user_name ?? 'User',
+                    right: data.right ?? '',
+                    user_id: parseInt(userId, 10),
+                });
                 navigate('/dashboard');
             } else {
                 setError('Invalid credentials');

@@ -47,6 +47,7 @@ import {
   PanelRightOpen,
 } from 'lucide-react';
 import { ADMIN_ENTITY_ROUTES } from '../pages/admin/adminEntities';
+import { getCachedUser, clearCachedUser } from '../lib/userCache';
 
 const DRAWER_WIDTH = 280;
 const DRAWER_COLLAPSED_WIDTH = 72;
@@ -97,6 +98,7 @@ export default function MainLayout() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
   const [adminExpanded, setAdminExpanded] = useState(false);
+  const [cachedUser] = useState(() => getCachedUser());
   const navigate = useNavigate();
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
@@ -132,6 +134,7 @@ export default function MainLayout() {
   const handleLogout = () => {
     handleUserMenuClose();
     setDrawerOpen(false);
+    clearCachedUser();
     navigate('/login');
   };
 
@@ -350,13 +353,13 @@ export default function MainLayout() {
         }}
       >
         <Avatar sx={{ width: 40, height: 40, bgcolor: 'primary.main', fontSize: '0.875rem', flexShrink: 0 }}>
-          U
-        </Avatar>
+            {(cachedUser?.user_name?.trim().charAt(0) || 'U').toUpperCase()}
+          </Avatar>
         {!collapsed && (
           <>
             <ListItemText
-              primary="User"
-              secondary="user@example.com"
+              primary={cachedUser?.user_name?.trim() || 'User'}
+              secondary={cachedUser?.right ? String(cachedUser.right) : '—'}
               primaryTypographyProps={{ fontSize: '0.875rem', fontWeight: 600 }}
               secondaryTypographyProps={{ fontSize: '0.75rem', color: 'text.secondary' }}
               sx={{ flex: 1, minWidth: 0, my: 0 }}
