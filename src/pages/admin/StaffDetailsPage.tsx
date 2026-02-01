@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { EntityTable, ColumnDef } from '../../components/admin/EntityTable';
 import { EntityFormModal } from '../../components/admin/EntityFormModal';
 import { TextField, Box } from '@mui/material';
-import { apiGet, apiPost, apiPatch } from '../../lib/api';
+import { apiPost, apiPatch } from '../../lib/api';
 
 interface StaffDetailsRow {
   ID: number;

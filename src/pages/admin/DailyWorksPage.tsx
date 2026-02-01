@@ -11,6 +11,7 @@ interface Row {
   User: string | null;
   worktype: string | null;
   work: string | null;
+  Remarks?: string | null;
   created_at: string | null;
 }
 
@@ -31,7 +32,7 @@ export default function DailyWorksPage() {
   const [refetch, setRefetch] = useState(0);
 
   const openCreate = () => { setEditing(null); setForm({ PanNo: '', PartiName: '', User: '', worktype: '', work: '', Remarks: '' }); setModalOpen(true); };
-  const openEdit = useCallback((row: Row) => { setEditing(row); setForm({ PanNo: row.PanNo ?? '', PartiName: row.PartiName ?? '', User: row.User ?? '', worktype: row.worktype ?? '', work: (row as Record<string, unknown>).work as string ?? '', Remarks: (row as Record<string, unknown>).Remarks as string ?? '' }); setModalOpen(true); }, []);
+  const openEdit = useCallback((row: Row) => { setEditing(row); setForm({ PanNo: row.PanNo ?? '', PartiName: row.PartiName ?? '', User: row.User ?? '', worktype: row.worktype ?? '', work: row.work ?? '', Remarks: row.Remarks ?? '' }); setModalOpen(true); }, []);
 
   const submit = async () => {
     try {
