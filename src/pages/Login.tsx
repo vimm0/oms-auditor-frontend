@@ -13,6 +13,13 @@ export default function Login() {
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
+        let computerName = 'Web Client';
+        try {
+            const { invoke } = await import('@tauri-apps/api/core');
+            computerName = await invoke<string>('get_computer_name');
+        } catch {
+            // Not running in Tauri desktop app
+        }
         try {
             const response = await fetch(`${API_BASE}/api/login`, {
                 method: 'POST',
@@ -20,7 +27,7 @@ export default function Login() {
                 body: JSON.stringify({
                     user_id: parseInt(userId, 10),
                     password,
-                    computer_name: 'MacBook-Client',
+                    computer_name: computerName,
                 }),
             });
 
@@ -42,8 +49,18 @@ export default function Login() {
     };
 
     return (
-        <div className="page-container" style={{ justifyContent: 'center', alignItems: 'center' }}>
-            <div className="glass-panel" style={{ padding: '3rem', width: '400px', textAlign: 'center' }}>
+        <div
+            className="page-container"
+            style={{
+                minHeight: '100vh',
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                boxSizing: 'border-box',
+            }}
+        >
+            <div className="glass-panel" style={{ padding: '3rem', width: '400px', maxWidth: '90vw', textAlign: 'center' }}>
                 <h1 style={{ fontSize: '2rem', marginBottom: '2rem', background: 'linear-gradient(to right, #1976d2, #1565c0)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                     OMS Auditor
                 </h1>
